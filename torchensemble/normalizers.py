@@ -15,6 +15,8 @@ class TorchStandardScaler(torch.nn.Module):
         self.mean = torch.mean(x, dim=0, keepdim=True)
         # and the standard deviation
         self.std = torch.std(x, dim=0, keepdim=True)
+
+        return self
     
     def forward(self, x):
         return (x - torch.tile(self.mean, (x.shape[0], 1)))/torch.tile(self.std, (x.shape[0], 1))
