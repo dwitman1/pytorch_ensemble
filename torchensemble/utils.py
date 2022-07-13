@@ -20,7 +20,7 @@ defaults['StepLR_gamma'] = .1
 
 #
 # Dataloader defaults
-defaults['uniform']
+defaults['sample_strategy'] = 'uniform'
 defaults['low_prob_scale'] = 1
 defaults['replacement'] = True
 

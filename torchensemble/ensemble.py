@@ -29,7 +29,7 @@ class EnsembleRegressor(torch.nn.Module):
         for i_output in range(self.n_outputs):
             # And all the networks
             for i_network in range(len(self.networks[i_output])):
-                y[:,i_output] += self.weights[i_output][i_network]*self.networks[i_output][i_network](x)
+                y[:,i_output] += self.weights[i_output][i_network]*torch.squeeze(self.networks[i_output][i_network](x))
         
         return y
     
@@ -54,17 +54,17 @@ class EnsembleRegressor(torch.nn.Module):
         self.val_errors = [[None for _ in range(len(self.networks[i_output]))] for i_output in range(self.n_outputs)]
 
         # The training errors for each network
-        training_errors = [[None for _ in range(self.networks[i_output])] for i_output in range(self.n_outputs)]
+        training_errors = [[None for _ in range(len(self.networks[i_output]))] for i_output in range(self.n_outputs)]
 
         # For all the outputs
         for i_output in range(self.n_outputs):
             # For all the networks
-            for i_network in range(len(self.networks)):
+            for i_network in range(len(self.networks[i_output])):
                 # Fit this network
-                training_errors[i_output][i_network] = self.networks[i_output][i_network].fit(x_train, y_train, kwargs)
+                training_errors[i_output][i_network] = self.networks[i_output][i_network].fit(x_train, y_train[:,[i_output]], **kwargs)
                 # Calculate the validation error
                 y_val_pred = self.networks[i_output][i_network](x_val).detach()
-                self.val_errors[i_output][i_network] = self.error(y_val_pred, y_val)
+                self.val_errors[i_output][i_network] = self.error(y_val_pred, y_val[:,[i_output]])
         
         # Compute the weights based on the validation errors
         self.weights = self._compute_weights(self.val_errors)

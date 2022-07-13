@@ -1,6 +1,6 @@
 from matplotlib.pyplot import get
 import torch
-from utils import get_loss, get_optimizer, get_lr_scheduler, get_dataloader
+from torchensemble.utils import get_loss, get_optimizer, get_lr_scheduler, get_dataloader
 from tqdm import tqdm
 import uuid
 
@@ -18,8 +18,10 @@ training_parameters['sample_strategy'] = 'uniform'
 class FFNet(torch.nn.Module):
 
     def __init__(self, n_features, hidden_sizes, n_outputs,
-                 activation=torch.tanh(),
+                 activation=torch.nn.Tanh(),
                  feature_normalizer=None, output_normalizer=None):
+        
+        super(FFNet, self).__init__()
 
         # Store the attributes
         self.n_features = n_features
@@ -74,7 +76,7 @@ class FFNet(torch.nn.Module):
         loss_function = get_loss(training_parameters)
 
         # Set the optimizer
-        optimizer = get_optimizer(training_parameters, self.network.params())
+        optimizer = get_optimizer(training_parameters, self.network.parameters())
 
         # Get the scheduler
         scheduler = get_lr_scheduler(training_parameters, optimizer)

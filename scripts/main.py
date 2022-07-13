@@ -1,5 +1,4 @@
 import torch
-import torchensemble
 import numpy as np
 from torchensemble.normalizers import TorchStandardScaler, TorchInverseStandardScaler
 from torchensemble.ensemble import EnsembleRegressor
@@ -20,6 +19,11 @@ def main(config):
     n_features = 2
     n_outputs = 2
 
+    # Network construction
+    nodes_per_layer = [(20,30), (30,40)]
+    layers_per_networks = [4, 5]
+    networks_per_output = [4, 2]
+
     # Create the data
     n_train = 10000
     x_train, y_train = get_data(n_train)
@@ -31,21 +35,26 @@ def main(config):
     output_normalizers = [TorchInverseStandardScaler().fit(y_train[:,[i_output]]) for i_output in range(n_outputs)]
 
     # randomize the hidden sizes for the networks
-    hidden_sizes_outputs = [[[np.random.randint(20,30) for _ in range(5)] for __ in range(3)],
-                            [[np.random.randint(20,30) for _ in range(4)] for __ in range(5)]]
+    hidden_sizes = []
+    for i_output in range(n_outputs):
+        hidden_sizes.append([[np.random.randint(nodes_per_layer[i_output][0],
+                                                nodes_per_layer[i_output][1]) for _ in range(layers_per_networks[i_output])] \
+                                                                              for __ in range(networks_per_output[i_output])])
 
     # Create the networks
     networks = []
     for i_output in range(n_outputs):
-        network_output = [[FFNet(n_features, hidden_sizes, 1, feature_normalizer=feature_normalizer,
-                                 output_normalizer=output_normalizers[i_output]) for hidden_sizes in hidden_sizes_outputs[i_output]]]
-        networks.append(network_output)
+        networks_output = []
+        for i_network in range(networks_per_output[i_output]):
+            networks_output.append(FFNet(n_features, hidden_sizes[i_output][i_network], 1, feature_normalizer=feature_normalizer,
+                                         output_normalizer=output_normalizers[i_output]))
+        networks.append(networks_output)
     
     # And create the Ensemble
     ensemble = EnsembleRegressor(n_features, networks, n_outputs)
 
     # Fit it
-    nsemble.fit(x_train, y_train, val_data=(x_val, y_val), **config)
+    ensemble.fit(x_train, y_train, val_data=(x_val, y_val), **config)
 
     # print the val error
     y_pred_val = ensemble(x_val)

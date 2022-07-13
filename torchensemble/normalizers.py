@@ -17,11 +17,11 @@ class TorchStandardScaler(torch.nn.Module):
         self.std = torch.std(x, dim=0, keepdim=True)
 
         return self
-    
+     
     def forward(self, x):
         return (x - torch.tile(self.mean, (x.shape[0], 1)))/torch.tile(self.std, (x.shape[0], 1))
     
 class TorchInverseStandardScaler(TorchStandardScaler):
 
     def forward(self, x):
-        return x*torch.tile(self.std, (x.shape[0], 1)) + torch.tile(self.mean (x.shape[0], 1))
+        return x*torch.tile(self.std, (x.shape[0], 1)) + torch.tile(self.mean, (x.shape[0], 1))
