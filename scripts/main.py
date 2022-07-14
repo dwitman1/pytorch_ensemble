@@ -55,7 +55,7 @@ def main(config):
     ensemble = EnsembleRegressor(n_features, networks, n_outputs)
 
     # Fit it
-    ensemble.fit(x_train, y_train, val_data=(x_val, y_val), *config)
+    ensemble.fit(x_train, y_train, val_data=(x_val, y_val), **config)
 
     # print the val error
     y_pred_val = ensemble(x_val).detach()
