@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import argparse
 from torchensemble.normalizers import TorchStandardScaler, TorchInverseStandardScaler
 from torchensemble.ensemble import EnsembleRegressor
 from torchensemble.architectures import FFNet
@@ -54,12 +55,36 @@ def main(config):
     ensemble = EnsembleRegressor(n_features, networks, n_outputs)
 
     # Fit it
-    ensemble.fit(x_train, y_train, val_data=(x_val, y_val), **config)
+    ensemble.fit(x_train, y_train, val_data=(x_val, y_val), *config)
 
     # print the val error
-    y_pred_val = ensemble(x_val)
+    y_pred_val = ensemble(x_val).detach()
     print(ensemble.error(y_pred_val, y_val))
     
 
 if __name__ == '__main__':
-    main({})
+
+    parser = argparse.ArgumentParser()
+    
+    # Training parameters
+    parser.add_argument('--epochs', type=int, default=10, help='Number oftraining epochs', required=False)
+    parser.add_argument('--batch_size', type=int, default=32, help='size of each training batch', required=False)
+    parser.add_argument('--loss_type', type=str, default='MSE', 
+                        help='Loss function to use (MSE, L1, CrossEntropy)', required=False)
+    parser.add_argument('--optimizer_type', type=str, default='Adam', 
+                        help='optimizer algorithm to use (Adam, SGD)')
+    parser.add_argument('--lr', type=int, default=0.001, help='The learning rate for the optimizer', required=False)
+    parser.add_argument('--lr_scheduler', type=str, default='StepLR',
+                        help='The learning rate scheduler to use (StepLR)', required=False)
+    parser.add_argument('--StepLR_step_size', type=int, default=4,
+                        help='Number of epochs between learning rate decreases', required=False)
+    parser.add_argument('--StepLR_gamma', type=float, default=.1,
+                        help='The amount to decrease the learning rate by every StepLR_step_size', required=False)
+    parser.add_argument('--sample_strategy', type=str, default='uniform',
+                        help='How to drawn training data points from the training dataset', required=False)
+    
+    args = vars(parser.parse_args())
+
+    print(args)
+
+    main(args)
