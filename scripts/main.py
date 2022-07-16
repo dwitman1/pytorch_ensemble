@@ -22,11 +22,11 @@ def main(config):
 
     # Network construction
     nodes_per_layer = [(20,30), (30,40)]
-    layers_per_networks = [4, 5]
-    networks_per_output = [4, 2]
+    layers_per_networks = [3, 4]
+    networks_per_output = [3, 2]
 
     # Create the data
-    n_train = 10000
+    n_train = 5000
     x_train, y_train = get_data(n_train)
     n_val = 100
     x_val, y_val = get_data(n_val)

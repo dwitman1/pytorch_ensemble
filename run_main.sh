@@ -1,3 +1,3 @@
 pip install -e .
 
-python3 scripts/main.py --epochs 20 --batch_size 64
+python3 scripts/main.py --epochs 1 --batch_size 64

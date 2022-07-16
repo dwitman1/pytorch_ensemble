@@ -1,5 +1,9 @@
 import torch
 
+# TODO: Add max normalizer
+# TODO: Add max/min normalizer
+# TODO: Add combo normalizer class that takes on initialization a
+#       list of normalizers and performs normalization for each column
 
 class TorchStandardScaler(torch.nn.Module):
 
