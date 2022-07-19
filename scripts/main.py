@@ -21,7 +21,7 @@ def main(config):
     n_outputs = 2
 
     # Network construction
-    nodes_per_layer = [(20,30), (30,40)]
+    nodes_per_layer = [(20,30), (30,40)]   
     layers_per_networks = [3, 4]
     networks_per_output = [3, 2]
 
